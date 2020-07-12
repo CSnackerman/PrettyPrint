@@ -1,6 +1,6 @@
 #include "pretty_printer.h"
 
-// Static Variables
+// Constant sizes
 static const size_t SIZE_0  = 0;
 static const size_t SIZE_1  = 1;
 static const size_t SIZE_3  = 3;
