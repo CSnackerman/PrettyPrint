@@ -7,12 +7,12 @@
 
 #define MAX_STRING_LENGTH 32
 #define MAX_COLUMNS 5
+#define FLOAT_PRECISION 3
 
 typedef enum DataType {
     STRING,
     INTEGER,
-    FLOAT,
-    DOUBLE
+    FLOAT
 } DataType;
 
 void printArray(void* dataArray, size_t arraySize, DataType type);

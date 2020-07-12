@@ -1,9 +1,11 @@
 #include "pretty_printer.h"
 
 // --- Utility Prototypes ---
-static void printStringArray(char* stringArray[], size_t size);
+static void printStringArray(char* stringArray[], const size_t size);
+static void printIntegerArray(int* intArray, const size_t size);
+static void printFloatArray(float* floatArray, const size_t size, const unsigned int precision);
 
-// --- API ---
+// --- API Function Definitions ---
 
 //TODO after normal printing of arrays of each data type
 void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int numColumns) {
@@ -56,15 +58,11 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
             break;
         
         case INTEGER:
-            printf("integer\n");
+            printIntegerArray( (int*)dataArray, arraySize );
             break;
 
         case FLOAT:
-            printf("float\n");
-            break;
-
-        case DOUBLE:
-            printf("double\n");
+            printFloatArray( (float*)dataArray, arraySize, FLOAT_PRECISION );
             break;
 
         default:
@@ -75,7 +73,7 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
 
 // --- Utility Definitions ---
 
-static void printStringArray(char* stringArray[], size_t size) {
+static void printStringArray(char* stringArray[], const size_t size) {
 
     int i;
     for(i = 0; i < size; ++i) {
@@ -84,4 +82,27 @@ static void printStringArray(char* stringArray[], size_t size) {
 
     printf("\n");
 
+}
+
+static void printIntegerArray(int* intArray, const size_t size) {
+    
+    int i;
+    for(i = 0; i < size; ++i) {
+        printf("%d\n", intArray[i]);
+    }
+
+    printf("\n");
+}
+
+static void printFloatArray(float* floatArray, const size_t size, const unsigned int precision) {
+
+    char formatString[6];
+    sprintf(formatString, "%%.%df\n", precision);
+
+    int i;
+    for(i = 0; i < size; ++i) {
+        printf(formatString, floatArray[i]);
+    }
+
+    printf("\n");
 }
