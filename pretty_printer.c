@@ -1,43 +1,44 @@
 #include "pretty_printer.h"
 
-// Static variables
-static int i;
+// --- Utility Prototypes ---
+static void printStringArray(char* stringArray[], size_t size);
 
-// Static function prototypes
-static unsigned int getCharacterCountOfLongestElement();
+// --- API ---
 
+//TODO after normal printing of arrays of each data type
 void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int numColumns) {
 
-    // Guard statement
-    if(dataArray == NULL) {
-        return;
-    }
+    // // Guard statement
+    // if(dataArray == NULL) {
+    //     return;
+    // }
 
-    switch(type) {
+    // switch(type) {
 
-        case STRING:
-            printf("string\n");
-            break;
+    //     case STRING:
+    //         printf("string\n");
+    //         break;
         
-        case INTEGER:
-            printf("integer\n");
-            break;
+    //     case INTEGER:
+    //         printf("integer\n");
+    //         break;
 
-        case FLOAT:
-            printf("float\n");
-            break;
+    //     case FLOAT:
+    //         printf("float\n");
+    //         break;
 
-        case DOUBLE:
-            printf("double\n");
-            break;
+    //     case DOUBLE:
+    //         printf("double\n");
+    //         break;
 
-        default:
-            printf("Cannot pretty-print invalid type as columns\n");
-            return;
-    }
+    //     default:
+    //         printf("Cannot pretty-print invalid type as columns\n");
+    //         return;
+    // }
 }
 
 void printArray(void* dataArray, size_t arraySize, DataType type) {
+
     //Guard statements
     if(dataArray == NULL) {
         return;
@@ -48,16 +49,10 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
         return;
     }
 
-    char** stringIter = NULL;
-
     switch(type) {
 
         case STRING:
-            for(i = 0; i < arraySize; ++i) {
-                stringIter = (char**)dataArray;
-                printf("%s\n", *stringIter);
-                stringIter++;
-            }
+            printStringArray( (char**)dataArray, arraySize );
             break;
         
         case INTEGER:
@@ -73,7 +68,20 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
             break;
 
         default:
-            printf("Cannot pretty-print invalid type as columns\n");
+            printf("cannot pretty-print invalid type as columns\n");
             return;
     }
+}
+
+// --- Utility Definitions ---
+
+static void printStringArray(char* stringArray[], size_t size) {
+
+    int i;
+    for(i = 0; i < size; ++i) {
+        printf("%s\n", stringArray[i]);
+    }
+
+    printf("\n");
+
 }

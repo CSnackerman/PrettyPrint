@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define MAX_STRING_LENGTH 30
+#define MAX_STRING_LENGTH 32
+#define MAX_COLUMNS 5
 
 typedef enum DataType {
     STRING,
