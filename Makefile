@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g -std=c99
 target = test
-sources = test.c pretty_printer.c
+sources = *.c
 
 $(target) : $(sources)
 
