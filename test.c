@@ -36,7 +36,7 @@ int main() {
     //Debug print
     printf (
         "%p = %s\n%p = %s\n%p = %s\n%p = %s\n", 
-        &stringArray_size3, *stringArray_size3,
+        &stringArray_size3, *stringArray_size3,     // <-- sanity check
         &stringArray_size3[0], stringArray_size3[0],
         &stringArray_size3[1], stringArray_size3[1],
         &stringArray_size3[2], stringArray_size3[2]
