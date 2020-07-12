@@ -24,6 +24,7 @@ int main() {
 
     char* stringArray_size3[SIZE_3];
 
+    //initialize string array elements (same as initStringArray() just pulled out for debugging purposes)
     int i;
     for(i = 0; i < SIZE_3; ++i) {
         char testString[MAX_STRING_LENGTH];
@@ -32,6 +33,7 @@ int main() {
         printf("testString = \"%s\"\nstrArray[%d] = \"%s\"\naddr = %p\n\n", testString, i, stringArray_size3[i], &stringArray_size3[i]);
     }
 
+    //Debug print
     printf (
         "%p = %s\n%p = %s\n%p = %s\n%p = %s\n", 
         &stringArray_size3, *stringArray_size3,
