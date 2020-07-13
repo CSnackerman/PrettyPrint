@@ -5,38 +5,48 @@ static void printStringArray(char* stringArray[], const size_t size);
 static void printIntegerArray(int* intArray, const size_t size);
 static void printFloatArray(float* floatArray, const size_t size, const unsigned int precision);
 
+static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned int columnCount);
+
+static int getLongestStringElementLength(char* stringArray[], const size_t size);
+
 // --- API Function Definitions ---
 
-//TODO after normal printing of arrays of each data type
 void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int numColumns) {
 
-    // // Guard statement
-    // if(dataArray == NULL) {
-    //     return;
-    // }
+    // Guard
+    if(dataArray == NULL) {
+        printf("[ERROR] cannot print null data array as columns\n");
+        return;
+    }
 
-    // switch(type) {
+    if(numColumns > MAX_COLUMNS) {
+        printf("[ERROR] cannot print data array as %d columns", numColumns);
+        return;
+    }
 
-    //     case STRING:
-    //         printf("string\n");
-    //         break;
+    // Assign default number of columns
+    if(numColumns == 0) {
+        numColumns = DEFAULT_COLUMNS;
+    }
+
+    switch(type) {
+
+        case STRING:
+            printStringArrayAsColumns((char**)dataArray, arraySize, numColumns);
+            break;
         
-    //     case INTEGER:
-    //         printf("integer\n");
-    //         break;
+        case INTEGER:
+            printf("integer\n");
+            break;
 
-    //     case FLOAT:
-    //         printf("float\n");
-    //         break;
+        case FLOAT:
+            printf("float\n");
+            break;
 
-    //     case DOUBLE:
-    //         printf("double\n");
-    //         break;
-
-    //     default:
-    //         printf("Cannot pretty-print invalid type as columns\n");
-    //         return;
-    // }
+        default:
+            printf("[ERROR] Cannot pretty-print invalid type as columns\n");
+            return;
+    }
 }
 
 void printArray(void* dataArray, size_t arraySize, DataType type) {
@@ -66,7 +76,7 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
             break;
 
         default:
-            printf("cannot pretty-print invalid type as columns\n");
+            printf("[ERROR] cannot pretty-print invalid type as columns\n");
             return;
     }
 }
@@ -74,6 +84,24 @@ void printArray(void* dataArray, size_t arraySize, DataType type) {
 // --- Utility Definitions ---
 
 static void printStringArray(char* stringArray[], const size_t size) {
+
+    // Guards
+    if(stringArray == NULL) {
+        printf("[ERROR] cannot print null string array\n");
+        return;
+    }
+
+    if(size < 0) {
+        printf("[ERROR] cannot print string array with size %ld\n", size);
+        return;
+    }
+
+    if(size == 0) {
+        printf("empty string array\n");
+        return;
+    }
+
+    // ---
 
     int i;
     for(i = 0; i < size; ++i) {
@@ -105,4 +133,90 @@ static void printFloatArray(float* floatArray, const size_t size, const unsigned
     }
 
     printf("\n");
+}
+
+static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned int columnCount) {
+
+    // Guards
+    if(stringArray == NULL) {
+        printf("[ERROR] cannot print null string array\n");
+        return;
+    }
+
+    if(size < 0) {
+        printf("[ERROR] cannot print string array with size %ld\n", size);
+        return;
+    }
+
+    if(size == 0) {
+        printf("empty string array\n");
+        return;
+    }
+
+    // ---
+
+    // Assign default column count
+    if(columnCount == 0 || columnCount > MAX_COLUMNS) {
+        columnCount = DEFAULT_COLUMNS;
+    }
+
+    int currentStringLength = 0;
+    int fillChars = 0;
+    char tempString[MAX_STRING_LENGTH + COLUMN_SPACER];
+
+    int columnWidth = getLongestStringElementLength(stringArray, size) + COLUMN_SPACER;
+
+    int i, j;
+    for(i = 0; i < size; ++i) {
+        currentStringLength = strlen(stringArray[i]);
+
+        // Get number of fill-characters
+        fillChars = columnWidth - currentStringLength;
+
+        // Copy array string element to temp
+        strcpy(tempString, stringArray[i]);
+
+        // Concatenate fill characters to normalize string width
+        for(j = 0; j < fillChars + COLUMN_SPACER; ++j) {
+            strcat(tempString, FILL_CHAR);
+        }
+
+        // Conditional newlines
+        if (    
+            i != 0 
+            && i % columnCount == 0
+            && columnCount != 1 
+        ){ 
+            printf("\n"); 
+        }
+
+        if(columnCount == 1) {
+            printf("\n");
+        }
+
+        // Print temp
+        printf("%s", tempString);
+    }
+
+    printf("\n\n");
+}
+
+static int getLongestStringElementLength(char* stringArray[], const size_t size) {
+
+    int longest = 0;
+    int i, currentLength;
+    for(i = 0; i < size; ++i) {
+        currentLength = strlen(stringArray[i]);
+
+        if(currentLength > longest) {
+            longest = currentLength;
+        }
+
+        // Terminate the search if max length is found
+        if(longest == MAX_STRING_LENGTH) {
+            return longest;
+        }
+    }
+
+    return longest;
 }

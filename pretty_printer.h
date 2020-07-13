@@ -6,8 +6,11 @@
 #include <string.h>
 
 #define MAX_STRING_LENGTH 32
-#define MAX_COLUMNS 5
 #define FLOAT_PRECISION 3
+#define MAX_COLUMNS 5
+#define DEFAULT_COLUMNS 5
+#define COLUMN_SPACER 2
+#define FILL_CHAR " "
 
 typedef enum DataType {
     STRING,
