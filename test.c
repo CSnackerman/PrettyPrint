@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "pretty_printer.h"
 
 // Constant sizes
@@ -5,11 +7,18 @@ static const size_t SIZE_0  = 0;
 static const size_t SIZE_1  = 1;
 static const size_t SIZE_3  = 3;
 static const size_t SIZE_10 = 10;
+static const size_t SIZE_25 = 25;
 
 // Tests
+static void testRandRange();
+
+static void testRandomStringArrayInit();
+
 static void testPrintStringArrayElements();
 static void testPrintIntegerArrayElements();
 static void testPrintFloatArrayElements();
+
+static void testPrintStringArrayElementsAsColumns();
 
 // Utility Functions
 static void printTestHeader(const char* testName);
@@ -18,22 +27,122 @@ static void incrementalStringArrayInit(char* stringArray[], const size_t size);
 static void incrementalIntArrayInit(int** intArray, const size_t size);
 static void incrementalFloatArrayInit(float** floatArray, const size_t size);
 
+static void randomStringArrayInit(char* stringArray[], const size_t size);
+
 static void cleanupStringArray(char* stringArray[], const size_t size);
 static void cleanupArray(void* array, const size_t size, DataType type);
 
-// ---
+static int randRange(int lower, int upper);
+
+// --- Test Driver ---
 
 int main() {
 
+    // Seed the rand
+    srand(time(NULL));
+
     // Run Tests
+    testRandRange();
+
+    testRandomStringArrayInit();
+
     testPrintStringArrayElements();
     testPrintIntegerArrayElements();
     testPrintFloatArrayElements();
+
+    testPrintStringArrayElementsAsColumns();
 
     return 0;
 }
 
 // --- Test Definitions ---
+
+static void testRandRange() {
+
+    printTestHeader(__func__);
+
+    int lower, upper, range, generated;
+
+    // Set the range
+    lower = 2;
+    upper = 10;
+    range = upper - lower;
+
+    printf("lower=%d, upper=%d\n{ ", lower, upper);
+
+    // Print the set of all possible generated numbers four times (to ensure)
+    int i;
+    for(i = 0; i < upper * 4; ++i) {
+        generated = i % (range + 1) + lower;
+
+        if(i == upper * 4 - 1) {
+            printf("%d", generated);
+            break;
+        }
+
+        printf("%d, ", generated);
+    }
+
+    printf(" }\n\n");
+
+    // ---
+
+    // Set the range
+    lower = 0;
+    upper = 1;
+    range = upper - lower;
+
+    printf("lower=%d, upper=%d\n{ ", lower, upper);
+
+    // Print the set of all possible generated numbers four times (to ensure)
+    for(i = 0; i < upper * 4; ++i) {
+        generated = i % (range + 1) + lower;
+
+        if(i == upper * 4 - 1) {
+            printf("%d", generated);
+            break;
+        }
+
+        printf("%d, ", generated);
+    }
+
+    printf(" }\n\n");
+
+    // ---
+
+    // Set the range
+    lower = 0;
+    upper = 3;
+    range = upper - lower;
+
+    printf("lower=%d, upper=%d\n{ ", lower, upper);
+
+    // Print the set of all possible generated numbers four times (to ensure)
+    for(i = 0; i < upper * 4; ++i) {
+        generated = i % (range + 1) + lower;
+
+        if(i == upper * 4 - 1) {
+            printf("%d", generated);
+            break;
+        }
+
+        printf("%d, ", generated);
+    }
+
+    printf(" }\n\n");
+
+}
+
+static void testRandomStringArrayInit() {
+
+    printTestHeader(__func__);
+
+    char* stringArray_size25   [SIZE_25];
+
+    randomStringArrayInit(stringArray_size25, SIZE_25);
+
+    printArray(stringArray_size25, SIZE_25, STRING);
+}
 
 static void testPrintStringArrayElements() {
 
@@ -174,11 +283,58 @@ static void testPrintFloatArrayElements() {
     cleanupArray ( heap_floatArray_size10, 0, FLOAT );
 }
 
+static void testPrintStringArrayElementsAsColumns() {
+
+    printTestHeader(__func__);
+    
+    // String arrays
+    char* incrementalStringArray_size25   [SIZE_25];
+
+    // Init
+    incrementalStringArrayInit(incrementalStringArray_size25, SIZE_25);
+
+    // Print
+    printf("Default (%d) Columns:\n", DEFAULT_COLUMNS);
+    printColumns(incrementalStringArray_size25, SIZE_25, STRING, 0);
+
+    int numColumns = 1;
+    printf("%d Column(s):\n", numColumns);
+    printColumns(incrementalStringArray_size25, SIZE_25, STRING, numColumns);
+
+    numColumns = 2;
+    printf("%d Column(s):\n", numColumns);
+    printColumns(incrementalStringArray_size25, SIZE_25, STRING, numColumns);
+
+    numColumns = 3;
+    printf("%d Column(s):\n", numColumns);
+    printColumns(incrementalStringArray_size25, SIZE_25, STRING, numColumns);
+
+    numColumns = 4;
+    printf("%d Column(s):\n", numColumns);
+    printColumns(incrementalStringArray_size25, SIZE_25, STRING, numColumns);
+
+    // Cleanup
+    cleanupArray(incrementalStringArray_size25, SIZE_25, STRING);
+}
 
 // --- Utility ---
 
 static void printTestHeader(const char* testName) {
-    printf("--- %s ---\n\n", testName);
+
+    int length = strlen(testName);
+    char extendedName[length + 6];
+    char printBar[length + 6];
+
+    sprintf(extendedName, " | %s |", testName);
+
+    strcpy(printBar, " ");
+
+    int i;
+    for(i = 0; i < length + 4; ++i) {
+        strcat(printBar, "-");
+    }
+
+    printf("%s\n%s\n%s\n\n", printBar, extendedName, printBar);
 }
 
 // Initialize elements of the string array incrementally for easier debugging.
@@ -213,6 +369,29 @@ static void incrementalFloatArrayInit(float** floatArray, const size_t size) {
     }
 }
 
+static void randomStringArrayInit(char* stringArray[], const size_t size) {
+    char randChar;
+    int i, j, length;
+    for(i = 0; i < size; ++i) {
+        
+        // Randomly generate a string length
+        length = randRange(2, MAX_STRING_LENGTH);
+
+        // Allocate the string
+        stringArray[i] = malloc(sizeof(char*) * length);
+
+        // Fill the string
+        for(j = 0; j < length - 1; ++j) {
+
+            // Assign non-whitespace character
+            randChar = (char)randRange(33, 126);
+            stringArray[i][j] = randChar;
+        }
+
+        // Null terminate the string
+        stringArray[i][length -1] = '\0';
+    }
+}
 
 static void cleanupStringArray(char* stringArray[], const size_t size) {
     int i;
@@ -226,6 +405,11 @@ static void cleanupArray(void* array, const size_t size, DataType type) {
     switch(type) {
 
         case STRING:
+            if(size == 0) {
+                printf("[ERROR] size of string array required for cleanup\n");
+                return;
+            }
+
             cleanupStringArray((char**)array, size);
         return;
 
@@ -238,7 +422,20 @@ static void cleanupArray(void* array, const size_t size, DataType type) {
         return;
 
         default:
-            printf("cannot free array of invalid type\n");
+            printf("[ERROR] cannot free array of invalid type\n");
             return;
     }
+}
+
+static int randRange(int lower, int upper) {
+    
+    // Guard
+    if(lower > upper) {
+        printf("[ERROR] cannot generate a number between negative range\n");
+        return 255;
+    }
+
+    int range = upper - lower;
+
+    return rand() % (range + 1) + lower;
 }
