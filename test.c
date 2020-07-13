@@ -28,6 +28,7 @@ int main() {
     // Run Tests
     testPrintStringArrayElements();
     testPrintIntegerArrayElements();
+    testPrintFloatArrayElements();
 
     return 0;
 }
@@ -85,12 +86,12 @@ static void testPrintIntegerArrayElements() {
     int* stackArrayPtr3[] = { stack_intArray_size3 };
     int* stackArrayPtr10[] = { stack_intArray_size10 };
     
+    // Init stack arrays
     incrementalIntArrayInit ( stackArrayPtr0, SIZE_0 );
     incrementalIntArrayInit ( stackArrayPtr1, SIZE_1 );
     incrementalIntArrayInit ( stackArrayPtr3, SIZE_3 );
     incrementalIntArrayInit ( stackArrayPtr10, SIZE_10 );
     
-
     // Init heap arrays
     incrementalIntArrayInit ( & heap_intArray_size0, SIZE_0 );
     incrementalIntArrayInit ( & heap_intArray_size1, SIZE_1 );
@@ -122,6 +123,55 @@ static void testPrintFloatArrayElements() {
 
     printTestHeader(__func__);
 
+    // Stack arrays
+    float stack_floatArray_size0  [SIZE_0];
+    float stack_floatArray_size1  [SIZE_1];
+    float stack_floatArray_size3  [SIZE_3];
+    float stack_floatArray_size10 [SIZE_10];
+
+    // Heap arrays
+    float* heap_floatArray_size0 = NULL;
+    float* heap_floatArray_size1 = NULL;
+    float* heap_floatArray_size3 = NULL;
+    float* heap_floatArray_size10 = NULL;
+
+    // Stack allocated arrays have special pointer declarations
+    float* stackArrayPtr0[] = { stack_floatArray_size0 };
+    float* stackArrayPtr1[] = { stack_floatArray_size1 };
+    float* stackArrayPtr3[] = { stack_floatArray_size3 };
+    float* stackArrayPtr10[] = { stack_floatArray_size10 };
+
+    // Init stack arrays
+    incrementalFloatArrayInit ( stackArrayPtr0, SIZE_0 );
+    incrementalFloatArrayInit ( stackArrayPtr1, SIZE_1 );
+    incrementalFloatArrayInit ( stackArrayPtr3, SIZE_3 );
+    incrementalFloatArrayInit ( stackArrayPtr10, SIZE_10 );
+    
+    // Init heap arrays
+    incrementalFloatArrayInit ( & heap_floatArray_size0, SIZE_0 );
+    incrementalFloatArrayInit ( & heap_floatArray_size1, SIZE_1 );
+    incrementalFloatArrayInit ( & heap_floatArray_size3, SIZE_3 );
+    incrementalFloatArrayInit ( & heap_floatArray_size10, SIZE_10 );
+
+    // Print stack arrays
+    printf("Stack Arrays:\n");
+    printArray ( stack_floatArray_size0, SIZE_0, FLOAT );
+    printArray ( stack_floatArray_size1, SIZE_1, FLOAT );
+    printArray ( stack_floatArray_size3, SIZE_3, FLOAT );
+    printArray ( stack_floatArray_size10, SIZE_10, FLOAT );
+
+    // Print heap arrays
+    printf("Heap Arrays:\n");
+    printArray ( heap_floatArray_size0, SIZE_0, FLOAT );
+    printArray ( heap_floatArray_size1, SIZE_1, FLOAT );
+    printArray ( heap_floatArray_size3, SIZE_3, FLOAT );
+    printArray ( heap_floatArray_size10, SIZE_10, FLOAT );
+
+    // Cleanup heap arrays
+    cleanupArray ( heap_floatArray_size0, 0, FLOAT );
+    cleanupArray ( heap_floatArray_size1, 0, FLOAT );
+    cleanupArray ( heap_floatArray_size3, 0, FLOAT );
+    cleanupArray ( heap_floatArray_size10, 0, FLOAT );
 }
 
 
@@ -154,7 +204,7 @@ static void incrementalIntArrayInit(int** intArray, const size_t size) {
 
 static void incrementalFloatArrayInit(float** floatArray, const size_t size) {
     if(*floatArray == NULL) {
-        floatArray = malloc(sizeof(int) * size);
+        *floatArray = malloc(sizeof(float) * size);
     }
 
     int i;
