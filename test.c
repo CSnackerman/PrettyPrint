@@ -19,6 +19,8 @@ static void testPrintIntegerArrayElements();
 static void testPrintFloatArrayElements();
 
 static void testPrintStringArrayElementsAsColumns();
+static void testPrintIntegerArrayElementsAsColumns();
+static void testPrintFloatArrayElementsAsColumns();
 
 // Utility Functions
 static void printTestHeader(const char* testName);
@@ -51,6 +53,8 @@ int main() {
     testPrintFloatArrayElements();
 
     testPrintStringArrayElementsAsColumns();
+    testPrintIntegerArrayElementsAsColumns();
+    testPrintFloatArrayElementsAsColumns();
 
     return 0;
 }
@@ -316,6 +320,40 @@ static void testPrintStringArrayElementsAsColumns() {
     // Cleanup
     cleanupArray(incrementalStringArray_size25, SIZE_25, STRING);
 }
+
+static void testPrintIntegerArrayElementsAsColumns() {
+    
+    printTestHeader(__func__);
+
+    // Init Stack arrays
+    int stack_intArray_size25[SIZE_25];
+    int* stackArrayPtr25[] = { stack_intArray_size25 };
+
+    incrementalIntArrayInit(stackArrayPtr25, SIZE_25);
+
+    // Init Heap arrays
+    int* heap_intArray_size25 = malloc(SIZE_25);
+
+    incrementalIntArrayInit(&heap_intArray_size25, SIZE_25);
+
+    // Print
+    printf("Stack Arrays:\n");
+    printf("Default (%d) Columns:\n", DEFAULT_COLUMNS);
+    printColumns(stack_intArray_size25, SIZE_25, INTEGER, DEFAULT_COLUMNS);
+
+    printf("Heap Arrays:\n");
+    printf("Default (%d) Columns:\n", DEFAULT_COLUMNS);
+    printColumns(heap_intArray_size25, SIZE_25, INTEGER, DEFAULT_COLUMNS);
+
+    // Cleanup
+    cleanupArray(heap_intArray_size25, SIZE_25, INTEGER);
+}
+
+static void testPrintFloatArrayElementsAsColumns() {
+    
+    printTestHeader(__func__);
+}
+
 
 // --- Utility ---
 
