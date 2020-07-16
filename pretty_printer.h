@@ -19,6 +19,6 @@ typedef enum DataType {
 } DataType;
 
 void printArray(void* dataArray, size_t arraySize, DataType type);
-void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int numColumns);
+void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned numColumns);
 
 #endif

@@ -3,15 +3,19 @@
 // --- Utility Prototypes ---
 static void printStringArray(char* stringArray[], const size_t size);
 static void printIntegerArray(int* intArray, const size_t size);
-static void printFloatArray(float* floatArray, const size_t size, const unsigned int precision);
+static void printFloatArray(float* floatArray, const size_t size, const unsigned precision);
 
-static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned int columnCount);
+static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned columnCount);
+static void printNumericArrayAsColumns(void* dataArray, DataType type, const size_t size, unsigned columnCount);
 
+static int getColumnWidth(void* dataArray, const size_t size, DataType type);
 static int getLongestStringElementLength(char* stringArray[], const size_t size);
+static int getStringLengthOfLargestInt(int* intArray, const size_t size);
+static int getStringLengthOfLargestFloat(float* floatArray, const size_t size);
 
 // --- API Function Definitions ---
 
-void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int numColumns) {
+void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned numColumns) {
 
     // Guard
     if(dataArray == NULL) {
@@ -36,7 +40,7 @@ void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned int
             break;
         
         case INTEGER:
-            printf("integer\n");
+            printNumericArrayAsColumns((int*)dataArray, INTEGER, arraySize, numColumns);
             break;
 
         case FLOAT:
@@ -122,7 +126,7 @@ static void printIntegerArray(int* intArray, const size_t size) {
     printf("\n");
 }
 
-static void printFloatArray(float* floatArray, const size_t size, const unsigned int precision) {
+static void printFloatArray(float* floatArray, const size_t size, const unsigned precision) {
 
     char formatString[6];
     sprintf(formatString, "%%.%df\n", precision);
@@ -135,7 +139,7 @@ static void printFloatArray(float* floatArray, const size_t size, const unsigned
     printf("\n");
 }
 
-static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned int columnCount) {
+static void printStringArrayAsColumns(char* stringArray[], const size_t size, unsigned columnCount) {
 
     // Guards
     if(stringArray == NULL) {
@@ -164,7 +168,7 @@ static void printStringArrayAsColumns(char* stringArray[], const size_t size, un
     int fillChars = 0;
     char tempString[MAX_STRING_LENGTH + COLUMN_SPACER];
 
-    int columnWidth = getLongestStringElementLength(stringArray, size) + COLUMN_SPACER;
+    int columnWidth = getColumnWidth(stringArray, size, STRING);
 
     int i, j;
     for(i = 0; i < size; ++i) {
@@ -201,6 +205,153 @@ static void printStringArrayAsColumns(char* stringArray[], const size_t size, un
     printf("\n\n");
 }
 
+static void printNumericArrayAsColumns(void* dataArray, DataType type, const size_t size, unsigned columnCount) {
+
+    // Set the typename
+    char typeName[8];
+    switch(type) {
+
+        case INTEGER: 
+            sprintf(typeName, "%s", "integer"); 
+            break;
+
+        case FLOAT:
+            sprintf(typeName, "%s", "float");
+            break;
+    }
+
+    // Guards
+    if(dataArray == NULL) {
+        printf("[ERROR] cannot print null %s array\n", typeName);
+    }
+
+    if(size < 0) {
+        printf("[ERROR] cannot print %s array with size %ld\n", typeName, size);
+        return;
+    }
+
+    if(size == 0) {
+        printf("empty %s array\n", typeName);
+        return;
+    }
+
+    // ---
+
+    // Assign default column count
+    if(columnCount == 0 || columnCount > MAX_COLUMNS) {
+        columnCount = DEFAULT_COLUMNS;
+    }
+
+
+    // Get the column width
+    int columnWidth = 0;
+    switch(type) {
+
+        case INTEGER:
+            columnWidth = getColumnWidth((int*)dataArray, size, INTEGER);
+            break;
+
+        case FLOAT:
+            columnWidth = getColumnWidth((float*)dataArray, size, FLOAT);
+            break;
+    }
+
+    // Set the array pointers
+    int* intArrayPtr = NULL;
+    float* floatArrayPtr = NULL;
+
+    switch(type) {
+
+        case INTEGER:
+            intArrayPtr = dataArray;
+            break;
+
+        case FLOAT:
+            floatArrayPtr = dataArray;
+            break;
+    }
+
+    // Create float format string
+    char floatFormat[8] = "";
+    if(type == FLOAT) {
+        sprintf(floatFormat, "%%.%df", FLOAT_PRECISION);
+    }
+    
+    // Iterate the array
+    int currentStringLength = 0;
+    int fillChars = 0;
+    char tempString[MAX_STRING_LENGTH + COLUMN_SPACER] = "";
+    int i, j;
+    for(i = 0; i < size; ++i) {
+
+        // Get length of string representation of current int
+        switch(type) {
+
+            case INTEGER:
+                sprintf(tempString, "%d", intArrayPtr[i]);
+                break;
+
+            case FLOAT:
+                sprintf(tempString, floatFormat, floatArrayPtr[i]);
+                break;
+        }
+
+        currentStringLength = strlen(tempString);
+
+        // Get number of fill-characters
+        fillChars = columnWidth - currentStringLength;
+
+        // Concatenate fill characters to normalize string width
+        for(j = 0; j < fillChars + COLUMN_SPACER; ++j) {
+            strcat(tempString, FILL_CHAR);
+        }
+
+        // Conditional newlines
+        if (    
+            i != 0 
+            && i % columnCount == 0
+            && columnCount != 1 
+        ){ 
+            printf("\n"); 
+        }
+
+        if(columnCount == 1) {
+            printf("\n");
+        }
+
+        // Print temp
+        printf("%s", tempString);
+    }
+
+    printf("\n\n");
+}
+
+static void printFloatArrayAsColumns(float* floatArray, const size_t size, unsigned columnCount) {
+
+}
+
+static int getColumnWidth(void* dataArray, const size_t size, DataType type) {
+
+    int width = 0;
+    
+    switch(type) {
+
+        case STRING:
+            width = getLongestStringElementLength((char**)dataArray, size);
+            break;
+
+        case INTEGER:
+            width = getStringLengthOfLargestInt((int*)dataArray, size);
+            break;
+
+        case FLOAT:
+            width = getStringLengthOfLargestFloat((float*)dataArray, size);
+            break;
+    }
+
+    return width + COLUMN_SPACER;
+}
+
 static int getLongestStringElementLength(char* stringArray[], const size_t size) {
 
     int longest = 0;
@@ -220,3 +371,45 @@ static int getLongestStringElementLength(char* stringArray[], const size_t size)
 
     return longest;
 }
+
+static int getStringLengthOfLargestInt(int* intArray, const size_t size) {
+    
+    // Find largest value in the array
+    int i, largest = 0;
+    for(i = 0; i < size; ++i) {
+
+        if(intArray[i] > largest) {
+            largest = intArray[i];
+        }
+    }
+
+    // Get string representation of largest value.
+    char buffer[16] = "";
+    sprintf(buffer, "%d", largest);
+    
+    return strlen(buffer);
+}
+
+static int getStringLengthOfLargestFloat(float* floatArray, const size_t size) {
+
+    // Find largest value in the array
+    int i, largest = 0;
+    for(i = 0; i < size; ++i) {
+
+        if(floatArray[i] > largest) {
+            largest = floatArray[i];
+        }
+    }
+
+    // Create format string
+    char format[8];
+    sprintf(format, "%%.%df", FLOAT_PRECISION);
+
+    // Get string representation of largest value.
+    char buffer[16] = "";
+    sprintf(buffer, format, largest);
+    
+    return strlen(buffer);
+}
+
+
