@@ -43,15 +43,16 @@ int main() {
     // Seed the rand
     srand(time(NULL));
 
-    // Run Tests
+    // Utility Tests
     testRandRange();
-
     testRandomStringArrayInit();
 
+    // Normal Print Tests
     testPrintStringArrayElements();
     testPrintIntegerArrayElements();
     testPrintFloatArrayElements();
 
+    // Column Print Tests
     testPrintStringArrayElementsAsColumns();
     testPrintIntegerArrayElementsAsColumns();
     testPrintFloatArrayElementsAsColumns();
@@ -352,6 +353,29 @@ static void testPrintIntegerArrayElementsAsColumns() {
 static void testPrintFloatArrayElementsAsColumns() {
     
     printTestHeader(__func__);
+
+    // Init Stack arrays
+    float stack_floatArray_size25[SIZE_25];
+    float* stackArrayPtr25[] = { stack_floatArray_size25 };
+
+    incrementalFloatArrayInit(stackArrayPtr25, SIZE_25);
+
+    // Init Heap arrays
+    float* heap_floatArray_size25 = malloc(SIZE_25);
+
+    incrementalFloatArrayInit(&heap_floatArray_size25, SIZE_25);
+
+    // Print
+    printf("Stack Arrays:\n");
+    printf("Default (%d) Columns:\n", DEFAULT_COLUMNS);
+    printColumns(stack_floatArray_size25, SIZE_25, FLOAT, DEFAULT_COLUMNS);
+
+    printf("Heap Arrays:\n");
+    printf("Default (%d) Columns:\n", DEFAULT_COLUMNS);
+    printColumns(heap_floatArray_size25, SIZE_25, FLOAT, DEFAULT_COLUMNS);
+
+    // Cleanup
+    cleanupArray(heap_floatArray_size25, SIZE_25, FLOAT);
 }
 
 
