@@ -44,7 +44,7 @@ void printColumns(void* dataArray, size_t arraySize, DataType type, unsigned num
             break;
 
         case FLOAT:
-            printf("float\n");
+            printNumericArrayAsColumns((float*)dataArray, FLOAT, arraySize, numColumns);
             break;
 
         default:
