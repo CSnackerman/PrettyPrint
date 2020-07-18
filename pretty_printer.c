@@ -165,7 +165,7 @@ static void printStringArrayAsColumns(char* stringArray[], const size_t size, un
     }
 
     int currentStringLength = 0;
-    int fillChars = 0;
+    int numFillChars = 0;
     char tempString[MAX_STRING_LENGTH + COLUMN_SPACER];
 
     int columnWidth = getColumnWidth(stringArray, size, STRING);
@@ -175,13 +175,13 @@ static void printStringArrayAsColumns(char* stringArray[], const size_t size, un
         currentStringLength = strlen(stringArray[i]);
 
         // Get number of fill-characters
-        fillChars = columnWidth - currentStringLength;
+        numFillChars = columnWidth - currentStringLength;
 
         // Copy array string element to temp
         strcpy(tempString, stringArray[i]);
 
         // Concatenate fill characters to normalize string width
-        for(j = 0; j < fillChars + COLUMN_SPACER; ++j) {
+        for(j = 0; j < numFillChars; ++j) {
             strcat(tempString, FILL_CHAR);
         }
 
@@ -279,7 +279,7 @@ static void printNumericArrayAsColumns(void* dataArray, DataType type, const siz
     
     // Iterate the array
     int currentStringLength = 0;
-    int fillChars = 0;
+    int numFillChars = 0;
     char tempString[MAX_STRING_LENGTH + COLUMN_SPACER] = "";
     int i, j;
     for(i = 0; i < size; ++i) {
@@ -299,10 +299,10 @@ static void printNumericArrayAsColumns(void* dataArray, DataType type, const siz
         currentStringLength = strlen(tempString);
 
         // Get number of fill-characters
-        fillChars = columnWidth - currentStringLength;
+        numFillChars = columnWidth - currentStringLength;
 
         // Concatenate fill characters to normalize string width
-        for(j = 0; j < fillChars + COLUMN_SPACER; ++j) {
+        for(j = 0; j < numFillChars; ++j) {
             strcat(tempString, FILL_CHAR);
         }
 
@@ -324,10 +324,6 @@ static void printNumericArrayAsColumns(void* dataArray, DataType type, const siz
     }
 
     printf("\n\n");
-}
-
-static void printFloatArrayAsColumns(float* floatArray, const size_t size, unsigned columnCount) {
-
 }
 
 static int getColumnWidth(void* dataArray, const size_t size, DataType type) {
@@ -393,7 +389,8 @@ static int getStringLengthOfLargestInt(int* intArray, const size_t size) {
 static int getStringLengthOfLargestFloat(float* floatArray, const size_t size) {
 
     // Find largest value in the array
-    int i, largest = 0;
+    int i; 
+    float largest = 0;
     for(i = 0; i < size; ++i) {
 
         if(floatArray[i] > largest) {
