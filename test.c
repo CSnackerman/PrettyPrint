@@ -1,5 +1,3 @@
-#include <time.h>
-
 #include "pretty_printer.h"
 
 // Constant sizes
@@ -21,20 +19,6 @@ static void testPrintFloatArrayElements();
 static void testPrintStringArrayElementsAsColumns();
 static void testPrintIntegerArrayElementsAsColumns();
 static void testPrintFloatArrayElementsAsColumns();
-
-// Utility Functions
-static void printTestHeader(const char* testName);
-
-static void incrementalStringArrayInit(char* stringArray[], const size_t size);
-static void incrementalIntArrayInit(int** intArray, const size_t size);
-static void incrementalFloatArrayInit(float** floatArray, const size_t size);
-
-static void randomStringArrayInit(char* stringArray[], const size_t size);
-
-static void cleanupStringArray(char* stringArray[], const size_t size);
-static void cleanupArray(void* array, const size_t size, DataType type);
-
-static int randRange(int lower, int upper);
 
 // --- Test Driver ---
 
@@ -376,128 +360,4 @@ static void testPrintFloatArrayElementsAsColumns() {
 
     // Cleanup
     cleanupArray(heap_floatArray_size25, SIZE_25, FLOAT);
-}
-
-
-// --- Utility ---
-
-static void printTestHeader(const char* testName) {
-
-    int length = strlen(testName);
-    char extendedName[length + 6];
-    char printBar[length + 6];
-
-    sprintf(extendedName, " | %s |", testName);
-
-    strcpy(printBar, " ");
-
-    int i;
-    for(i = 0; i < length + 4; ++i) {
-        strcat(printBar, "-");
-    }
-
-    printf("%s\n%s\n%s\n\n", printBar, extendedName, printBar);
-}
-
-// Initialize elements of the string array incrementally for easier debugging.
-static void incrementalStringArrayInit(char* stringArray[], const size_t size) {
-    int i;
-    for(i = 0; i < size; ++i) {
-        stringArray[i] = malloc(sizeof(char*) * MAX_STRING_LENGTH);
-        sprintf(stringArray[i], "string #%.2d", i);
-    }
-}
-
-static void incrementalIntArrayInit(int** intArray, const size_t size) {
-
-    if(*intArray == NULL) {
-        *intArray = malloc(sizeof(int) * size);
-    }
-    
-    int i;
-    for(i = 0; i < size; ++i) {
-        (*intArray)[i] = i;
-    }
-}
-
-static void incrementalFloatArrayInit(float** floatArray, const size_t size) {
-    if(*floatArray == NULL) {
-        *floatArray = malloc(sizeof(float) * size);
-    }
-
-    int i;
-    for(i = 0; i < size; ++i) {
-        (*floatArray)[i] = (float)i;
-    }
-}
-
-static void randomStringArrayInit(char* stringArray[], const size_t size) {
-    char randChar;
-    int i, j, length;
-    for(i = 0; i < size; ++i) {
-        
-        // Randomly generate a string length
-        length = randRange(2, MAX_STRING_LENGTH);
-
-        // Allocate the string
-        stringArray[i] = malloc(sizeof(char*) * length);
-
-        // Fill the string
-        for(j = 0; j < length - 1; ++j) {
-
-            // Assign non-whitespace character
-            randChar = (char)randRange(33, 126);
-            stringArray[i][j] = randChar;
-        }
-
-        // Null terminate the string
-        stringArray[i][length -1] = '\0';
-    }
-}
-
-static void cleanupStringArray(char* stringArray[], const size_t size) {
-    int i;
-    for(i = 0; i < size; ++i) {
-        free(stringArray[i]);
-    }
-}
-
-static void cleanupArray(void* array, const size_t size, DataType type) {
-
-    switch(type) {
-
-        case STRING:
-            if(size == 0) {
-                printf("[ERROR] size of string array required for cleanup\n");
-                return;
-            }
-
-            cleanupStringArray((char**)array, size);
-        return;
-
-        case INTEGER:
-            free((int*)array);
-        return;
-
-        case FLOAT:
-            free((float*)array);
-        return;
-
-        default:
-            printf("[ERROR] cannot free array of invalid type\n");
-            return;
-    }
-}
-
-static int randRange(int lower, int upper) {
-    
-    // Guard
-    if(lower > upper) {
-        printf("[ERROR] cannot generate a number between negative range\n");
-        return 255;
-    }
-
-    int range = upper - lower;
-
-    return rand() % (range + 1) + lower;
 }
